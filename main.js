@@ -115,7 +115,13 @@ const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
       else links.style.display = "";
     };
     burger.addEventListener("click", () => setDrawer(!links.classList.contains("open")));
-    links.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setDrawer(false)));
+    links.querySelectorAll("a").forEach((a) => {
+      const hubToggle = a.parentElement.classList.contains("has-menu"); // the "Knowledge Hub" link
+      a.addEventListener("click", (e) => {
+        if (hubToggle && window.innerWidth <= 760) { e.preventDefault(); a.parentElement.classList.toggle("expanded"); return; }
+        setDrawer(false);
+      });
+    });
   }
 })();
 
@@ -420,14 +426,17 @@ const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
 /* -------------------------------------------------------- skyline rises */
 (function skyline() {
-  if (REDUCED || typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
   const sec = document.querySelector("#skyline");
   if (!sec) return;
-  gsap.registerPlugin(ScrollTrigger);
-  gsap.from(sec.querySelectorAll(".sky-tower"), {
-    scaleY: 0, transformOrigin: "bottom", stagger: 0.06, duration: 0.9, ease: "power3.out",
-    scrollTrigger: { trigger: sec, start: "top 78%", once: true },
-  });
+  const towers = sec.querySelectorAll(".sky-tower");
+  if (REDUCED || !towers.length) return; // CSS default shows the towers upright
+  // arm: collapse with a staggered CSS transition (FOUC-safe — visible by default if JS is off)
+  towers.forEach((t, i) => { t.style.transition = "transform .8s cubic-bezier(.22,1,.36,1) " + (i * 0.05) + "s"; t.style.transform = "scaleY(0)"; });
+  let played = false;
+  const play = () => { if (played) return; played = true; towers.forEach((t) => { t.style.transform = "scaleY(1)"; }); };
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { play(); io.disconnect(); } }), { threshold: 0.2 });
+  io.observe(sec);
+  setTimeout(() => { if (!played) towers.forEach((t) => { t.style.transform = "scaleY(1)"; }); }, 4000);
 })();
 
 /* -------------------------------------------------------- blog: posts wipe in */
@@ -470,19 +479,20 @@ const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
         .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.12, duration: 0.7, ease: "power3.out" }, 3.1)
         .to({}, { duration: 1.2 });
     } else {
-      /* Mobile: NO pin, NO ScrollTrigger (flaky on phones). IntersectionObserver play-once + failsafe so words can never stay hidden. */
+      /* Mobile: simple, reliable reveal (no pin, no finicky line-draw). Building shows, words rise in. */
+      gsap.set(lines, { strokeDashoffset: 0 });   // building fully drawn
+      gsap.set(build, { opacity: 0, y: 18 });
       let played = false;
       const play = () => {
         if (played) return; played = true;
         gsap.timeline()
-          .to(lines, { strokeDashoffset: 0, stagger: 0.1, duration: 1.3, ease: "none" }, 0)
-          .to(build, { opacity: 0.22, duration: 0.5, ease: "power2.in" }, 1.15)
-          .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.07, duration: 0.55, ease: "power3.out" }, 1.25);
+          .to(build, { opacity: 0.42, y: 0, duration: 0.7, ease: "power3.out" }, 0)
+          .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.08, duration: 0.55, ease: "power3.out" }, 0.18);
       };
-      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { play(); io.disconnect(); } }), { threshold: 0.2 });
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { play(); io.disconnect(); } }), { threshold: 0.25 });
       io.observe(sec);
-      /* failsafe: if anything prevents the reveal, show it anyway */
-      setTimeout(() => { if (!played) { gsap.set(lines, { strokeDashoffset: 0 }); gsap.set(build, { opacity: 0.22 }); gsap.set(words, { opacity: 1, yPercent: 0, scale: 1 }); } }, 4500);
+      /* failsafe: never let it stay hidden */
+      setTimeout(() => { if (!played) { gsap.set(build, { opacity: 0.42, y: 0 }); gsap.set(words, { opacity: 1, yPercent: 0, scale: 1 }); } }, 2500);
     }
   };
   if (document.readyState === "complete") init();
