@@ -212,6 +212,12 @@ p { max-width: 70ch; }
 .stat .n { font-family: var(--serif); font-size: clamp(2.6rem, 5.2vw, 4.4rem); color: oklch(98% 0.004 255); line-height: 1; font-weight: 700; letter-spacing: -0.035em; }
 .stat .n .suf { color: oklch(70% 0 0); }
 .stat .l { margin-top: 14px; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: oklch(68% 0 0); }
+.stats.three { grid-template-columns: repeat(3, 1fr); }
+/* colossal number moment — data as the cinematic object */
+.bignum { display: flex; align-items: flex-end; gap: clamp(22px, 4.5vw, 64px); flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: clamp(22px, 3vh, 40px); margin: 16px 0 clamp(40px, 6vh, 70px); }
+.bignum-fig { font-family: var(--serif); font-weight: 800; font-size: clamp(5rem, 23vw, 16rem); line-height: 0.76; letter-spacing: -0.055em; color: var(--ink-0); }
+.bignum-fig .suf { color: var(--ink-3); }
+.bignum-cap { max-width: 30ch; font-size: clamp(1rem, 1.55vw, 1.32rem); color: var(--ink-2); line-height: 1.5; padding-bottom: 0.7em; }
 
 /* ---------------------------------------------------------------- services */
 .svc-list { display: grid; gap: 0; border-top: 1px solid var(--line); }
@@ -297,8 +303,8 @@ p { max-width: 70ch; }
 /* marquee */
 .marquee { overflow: hidden; border-block: 1px solid var(--line); padding-block: 26px; }
 .mtrack { display: flex; gap: 56px; width: max-content; will-change: transform; }
-.mtrack span { font-family: var(--serif); font-size: clamp(1.4rem, 2.6vw, 2.3rem); color: var(--ink-2); display: inline-flex; align-items: center; gap: 56px; white-space: nowrap; font-style: italic; }
-.mtrack span::after { content: "✦"; color: var(--accent); font-style: normal; font-size: 0.7em; }
+.mtrack span { font-family: var(--serif); font-weight: 800; text-transform: uppercase; letter-spacing: -0.005em; font-size: clamp(1.5rem, 3.4vw, 3rem); color: var(--ink-1); display: inline-flex; align-items: center; gap: 56px; white-space: nowrap; }
+.mtrack span::after { content: "/"; color: var(--ink-3); font-weight: 300; font-size: 0.8em; }
 @keyframes mleft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* benefits */
@@ -431,8 +437,8 @@ p { max-width: 70ch; }
 .hero-cine-inner { position: relative; z-index: 2; width: 100%; }
 .hero-cine .eyebrow { color: oklch(84% 0 0); }
 .hero-cine .eyebrow::before { background: oklch(84% 0 0 / .5); }
-.hero-cine h1 { color: oklch(99% 0 0); font-size: clamp(2.8rem, 7.4vw, 6.2rem); line-height: 0.98; margin: 0.3em 0 0.5em; }
-.hero-cine .lead { color: oklch(89% 0.005 var(--hue)); max-width: 54ch; }
+.hero-cine h1 { color: oklch(99% 0 0); font-size: clamp(3.4rem, 9.4vw, 8rem); line-height: 0.9; font-weight: 800; letter-spacing: -0.04em; margin: 0.26em 0 0.46em; text-wrap: balance; }
+.hero-cine .lead { color: oklch(90% 0.005 var(--hue)); max-width: 48ch; font-size: clamp(1.02rem, 1.5vw, 1.22rem); }
 .hero-cine .btn-ghost { border-color: oklch(100% 0 0 / .42); color: oklch(99% 0 0); }
 .hero-cine .btn-ghost:hover { border-color: oklch(100% 0 0); background: oklch(100% 0 0 / .1); }
 .hero-cine-cue { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); z-index: 2; color: oklch(92% 0 0 / .72); font-size: 0.7rem; letter-spacing: 0.26em; text-transform: uppercase; }
@@ -708,8 +714,8 @@ p { max-width: 70ch; }
 @media (max-width: 700px) { .bmorph-stage { aspect-ratio: 12 / 5; } }
 @media (max-width: 760px) {
   .hero-cine { align-items: center; padding: clamp(108px, 17vh, 150px) 0 clamp(64px, 12vh, 104px); }
-  .hero-cine h1 { font-size: clamp(2.4rem, 11vw, 3.4rem); margin: 0.22em 0 0.5em; }
-  .hero-cine .lead { font-size: 0.98rem; max-width: 36ch; }
+  .hero-cine h1 { font-size: clamp(3rem, 13.5vw, 4.8rem); line-height: 0.92; margin: 0.2em 0 0.46em; }
+  .hero-cine .lead { font-size: 1rem; max-width: 34ch; }
 }
 
 /* ===== Services: horizontal cinematic scroll (dark, full-screen panels) ===== */

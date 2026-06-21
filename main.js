@@ -194,7 +194,7 @@ const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   };
   const io = new IntersectionObserver(
     (entries) => entries.forEach((e) => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } }),
-    { threshold: 0.5 }
+    { threshold: 0.25 }
   );
   els.forEach((el) => io.observe(el));
 })();
