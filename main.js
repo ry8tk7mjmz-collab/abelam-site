@@ -459,44 +459,31 @@ const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
 /* -------------------------------------------------------- blueprint: condo draws, words sprout */
 (function blueprint() {
-  if (REDUCED || typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") return;
+  if (REDUCED || typeof gsap === "undefined") return;
   const sec = document.querySelector("#blueprint");
   if (!sec) return;
-  const pin = sec.querySelector(".blueprint-pin");
-  const lines = sec.querySelectorAll(".bp-line");
-  const build = sec.querySelector(".bp-build");
-  const words = sec.querySelectorAll(".bp-words span");
-  gsap.registerPlugin(ScrollTrigger);
-  const init = () => {
+  const hasST = typeof ScrollTrigger !== "undefined";
+
+  if (window.innerWidth >= 901 && hasST) {
+    /* Desktop: pinned build-then-hold scrub (line-draw) */
+    const pin = sec.querySelector(".blueprint-pin");
+    const lines = sec.querySelectorAll(".bp-line");
+    const build = sec.querySelector(".bp-build");
+    const words = sec.querySelectorAll(".bp-words span");
+    gsap.registerPlugin(ScrollTrigger);
     gsap.set(build, { opacity: 1 });
     gsap.set(words, { opacity: 0, yPercent: 45, scale: 0.8 });
-    lines.forEach((l) => { const len = l.getTotalLength(); gsap.set(l, { strokeDasharray: len, strokeDashoffset: len }); });
-    if (window.innerWidth >= 901) {
-      /* Desktop: pinned build-then-hold scrub */
-      const tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: "top top", end: "+=1700", pin: pin, scrub: 0.6, anticipatePin: 1, refreshPriority: 2 } });
-      tl.to(lines, { strokeDashoffset: 0, stagger: 0.16, duration: 2.4, ease: "none" }, 0)
-        .to(build, { opacity: 0.16, duration: 0.6, ease: "power2.in" }, 3.0)
-        .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.12, duration: 0.7, ease: "power3.out" }, 3.1)
-        .to({}, { duration: 1.2 });
-    } else {
-      /* Mobile: simple, reliable reveal (no pin, no finicky line-draw). Building shows, words rise in. */
-      gsap.set(lines, { strokeDashoffset: 0 });   // building fully drawn
-      gsap.set(build, { opacity: 0, y: 18 });
-      let played = false;
-      const play = () => {
-        if (played) return; played = true;
-        gsap.timeline()
-          .to(build, { opacity: 0.42, y: 0, duration: 0.7, ease: "power3.out" }, 0)
-          .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.08, duration: 0.55, ease: "power3.out" }, 0.18);
-      };
-      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { play(); io.disconnect(); } }), { threshold: 0.25 });
-      io.observe(sec);
-      /* failsafe: never let it stay hidden */
-      setTimeout(() => { if (!played) { gsap.set(build, { opacity: 0.42, y: 0 }); gsap.set(words, { opacity: 1, yPercent: 0, scale: 1 }); } }, 2500);
-    }
-  };
-  if (document.readyState === "complete") init();
-  else window.addEventListener("load", init);
+    lines.forEach((l) => { const len = l.getTotalLength() || 400; gsap.set(l, { strokeDasharray: len, strokeDashoffset: len }); });
+    const tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: "top top", end: "+=1700", pin: pin, scrub: 0.6, anticipatePin: 1, refreshPriority: 2 } });
+    tl.to(lines, { strokeDashoffset: 0, stagger: 0.16, duration: 2.4, ease: "none" }, 0)
+      .to(build, { opacity: 0.16, duration: 0.6, ease: "power2.in" }, 3.0)
+      .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.12, duration: 0.7, ease: "power3.out" }, 3.1)
+      .to({}, { duration: 1.2 });
+    return;
+  }
+
+  /* Mobile: static + always visible. The hero video starves the main thread near the top of the page,
+     so any reveal here stalls and reads as broken. A clean drawn building behind the headline is best. */
 })();
 
 /* -------------------------------------------------------- building-into-text morph */
