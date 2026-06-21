@@ -105,16 +105,17 @@ const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const burger = document.querySelector(".burger");
   const links = document.querySelector(".nav-links");
   if (burger && links) {
-    burger.addEventListener("click", () => {
-      const open = links.classList.toggle("open");
+    const setDrawer = (open) => {
+      const mobile = window.innerWidth <= 760;
+      links.classList.toggle("open", open);
       burger.classList.toggle("x", open);
       document.body.style.overflow = open ? "hidden" : "";
-    });
-    links.querySelectorAll("a").forEach((a) =>
-      a.addEventListener("click", () => {
-        links.classList.remove("open"); burger.classList.remove("x"); document.body.style.overflow = "";
-      })
-    );
+      // drive display directly so nothing in the cascade/compositor can block it (mobile only)
+      if (mobile) links.style.display = open ? "flex" : "none";
+      else links.style.display = "";
+    };
+    burger.addEventListener("click", () => setDrawer(!links.classList.contains("open")));
+    links.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setDrawer(false)));
   }
 })();
 

@@ -508,9 +508,13 @@ p { max-width: 70ch; }
   .post .go { justify-self: start; }
 }
 @media (max-width: 760px) {
-  .nav-links { position: fixed; inset: 0; flex-direction: column; justify-content: center; gap: 22px; background: oklch(98% 0.006 var(--hue) / 0.97); backdrop-filter: blur(16px); transform: translateY(-100%); transition: transform .5s var(--ease); }
-  .nav-links.open { transform: translateY(0); }
+  .nav-links { position: fixed; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100dvh; display: none; flex-direction: column; justify-content: center; gap: 22px; background: oklch(98% 0.006 var(--hue)); z-index: 805; overflow-y: auto; }
+  .nav-links.open { display: flex !important; }
   .nav-links a { font-size: 1.3rem; font-family: var(--serif); }
+  /* drawer has a light background, so force dark text + dark close-X even over the dark hero */
+  .nav .nav-links a { color: var(--ink-1) !important; }
+  .nav .nav-links a:hover, .nav .nav-links a[aria-current="page"] { color: var(--ink-0) !important; }
+  .nav .burger.x span { background: var(--ink-0) !important; }
   .nav-links .menu { position: static; transform: none; opacity: 1; visibility: visible; box-shadow: none; border: 0; background: transparent; text-align: center; padding: 0; }
   .nav-links .menu a { font-size: 0.95rem; font-family: var(--sans); }
   .burger { display: block; }
