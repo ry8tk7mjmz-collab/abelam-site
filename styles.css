@@ -426,7 +426,7 @@ p { max-width: 70ch; }
 
 /* ===== Cinematic full-bleed video hero ===== */
 .hero-cine { position: relative; min-height: 100svh; display: grid; align-items: end; justify-items: start; padding: clamp(120px, 16vh, 180px) 0 clamp(64px, 11vh, 120px); overflow: hidden; background: var(--ink-bg); }
-.hero-cine-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: saturate(0.5) contrast(1.05) brightness(0.95); }
+.hero-cine-vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; filter: saturate(0.8) contrast(1.08) brightness(0.92); }
 .hero-cine-veil { position: absolute; inset: 0; z-index: 1; background: linear-gradient(to top, oklch(11% 0 0 / .86) 0%, oklch(11% 0 0 / .30) 46%, oklch(11% 0 0 / .55) 100%); }
 .hero-cine-inner { position: relative; z-index: 2; width: 100%; }
 .hero-cine .eyebrow { color: oklch(84% 0 0); }

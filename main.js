@@ -142,6 +142,27 @@ const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   items.forEach((el) => io.observe(el));
 })();
 
+/* -------------------------------------------------------- reveal failsafe
+   IntersectionObservers can miss elements on fast mobile scrolls. This guarantees
+   any .ri / .clip that is in or above the viewport gets revealed (never stuck hidden). */
+(function revealFailsafe() {
+  if (REDUCED) return;
+  const check = () => {
+    const vh = window.innerHeight;
+    /* reveal anything at or above the current scroll position (top within/above viewport) */
+    document.querySelectorAll(".ri:not(.up)").forEach((el) => {
+      if (el.getBoundingClientRect().top < vh * 0.94) el.classList.add("up");
+    });
+    document.querySelectorAll(".clip:not(.open)").forEach((el) => {
+      if (el.getBoundingClientRect().top < vh * 0.94) el.classList.add("open");
+    });
+  };
+  let ticking = false;
+  addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { check(); ticking = false; }); } }, { passive: true });
+  addEventListener("load", () => setTimeout(check, 500));
+  setTimeout(check, 1400);
+})();
+
 /* -------------------------------------------------------- hero word reveal */
 (function words() {
   const ws = document.querySelectorAll(".hero .w");
@@ -448,11 +469,19 @@ const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
         .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.12, duration: 0.7, ease: "power3.out" }, 3.1)
         .to({}, { duration: 1.2 });
     } else {
-      /* Mobile: NO pin (pinning overlays content on phones). Plays once on scroll-in. */
-      const tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: "top 72%", once: true } });
-      tl.to(lines, { strokeDashoffset: 0, stagger: 0.12, duration: 1.5, ease: "none" }, 0)
-        .to(build, { opacity: 0.22, duration: 0.5, ease: "power2.in" }, 1.6)
-        .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.08, duration: 0.6, ease: "power3.out" }, 1.7);
+      /* Mobile: NO pin, NO ScrollTrigger (flaky on phones). IntersectionObserver play-once + failsafe so words can never stay hidden. */
+      let played = false;
+      const play = () => {
+        if (played) return; played = true;
+        gsap.timeline()
+          .to(lines, { strokeDashoffset: 0, stagger: 0.1, duration: 1.3, ease: "none" }, 0)
+          .to(build, { opacity: 0.22, duration: 0.5, ease: "power2.in" }, 1.15)
+          .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.07, duration: 0.55, ease: "power3.out" }, 1.25);
+      };
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { play(); io.disconnect(); } }), { threshold: 0.2 });
+      io.observe(sec);
+      /* failsafe: if anything prevents the reveal, show it anyway */
+      setTimeout(() => { if (!played) { gsap.set(lines, { strokeDashoffset: 0 }); gsap.set(build, { opacity: 0.22 }); gsap.set(words, { opacity: 1, yPercent: 0, scale: 1 }); } }, 4500);
     }
   };
   if (document.readyState === "complete") init();
