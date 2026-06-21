@@ -436,18 +436,27 @@ const FINE = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   const build = sec.querySelector(".bp-build");
   const words = sec.querySelectorAll(".bp-words span");
   gsap.registerPlugin(ScrollTrigger);
-  const setup = () => {
+  const init = () => {
     gsap.set(build, { opacity: 1 });
     gsap.set(words, { opacity: 0, yPercent: 45, scale: 0.8 });
     lines.forEach((l) => { const len = l.getTotalLength(); gsap.set(l, { strokeDasharray: len, strokeDashoffset: len }); });
-    const tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: "top top", end: "+=1700", pin: pin, scrub: 0.6, anticipatePin: 1, refreshPriority: 2 } });
-    tl.to(lines, { strokeDashoffset: 0, stagger: 0.16, duration: 2.4, ease: "none" }, 0)   // building draws
-      .to(build, { opacity: 0.16, duration: 0.6, ease: "power2.in" }, 3.0)                 // recede to blueprint ghost
-      .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.12, duration: 0.7, ease: "power3.out" }, 3.1) // words sprout
-      .to({}, { duration: 1.2 });                                                           // hold
+    if (window.innerWidth >= 901) {
+      /* Desktop: pinned build-then-hold scrub */
+      const tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: "top top", end: "+=1700", pin: pin, scrub: 0.6, anticipatePin: 1, refreshPriority: 2 } });
+      tl.to(lines, { strokeDashoffset: 0, stagger: 0.16, duration: 2.4, ease: "none" }, 0)
+        .to(build, { opacity: 0.16, duration: 0.6, ease: "power2.in" }, 3.0)
+        .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.12, duration: 0.7, ease: "power3.out" }, 3.1)
+        .to({}, { duration: 1.2 });
+    } else {
+      /* Mobile: NO pin (pinning overlays content on phones). Plays once on scroll-in. */
+      const tl = gsap.timeline({ scrollTrigger: { trigger: sec, start: "top 72%", once: true } });
+      tl.to(lines, { strokeDashoffset: 0, stagger: 0.12, duration: 1.5, ease: "none" }, 0)
+        .to(build, { opacity: 0.22, duration: 0.5, ease: "power2.in" }, 1.6)
+        .to(words, { opacity: 1, yPercent: 0, scale: 1, stagger: 0.08, duration: 0.6, ease: "power3.out" }, 1.7);
+    }
   };
-  if (document.readyState === "complete") setup();
-  else window.addEventListener("load", setup);
+  if (document.readyState === "complete") init();
+  else window.addEventListener("load", init);
 })();
 
 /* -------------------------------------------------------- building-into-text morph */

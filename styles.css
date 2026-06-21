@@ -482,6 +482,7 @@ p { max-width: 70ch; }
 /* custom cursor */
 .cursor-dot { position: fixed; top: 0; left: 0; width: 11px; height: 11px; border-radius: 50%; background: oklch(99% 0 0); pointer-events: none; z-index: 9990; mix-blend-mode: difference; will-change: transform; transition: width .25s var(--ease), height .25s var(--ease); }
 .cursor-dot.big { width: 48px; height: 48px; }
+@media (hover: none), (pointer: coarse) { .cursor-dot { display: none !important; } }
 @media (hover: hover) and (pointer: fine) { body.has-cursor, body.has-cursor a, body.has-cursor button, body.has-cursor .acc-head, body.has-cursor input, body.has-cursor textarea, body.has-cursor select { cursor: none; } }
 @media (prefers-reduced-motion: reduce) { .cursor-dot { display: none; } }
 
